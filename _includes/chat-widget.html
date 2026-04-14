@@ -1,0 +1,310 @@
+<!-- _includes/chat-widget.html -->
+<!-- AI Online Consultant Widget -->
+
+<!-- Turnstile Script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<!-- Chat Widget -->
+<div id="chat-widget" class="chat-widget" data-active="false">
+  <button id="chat-toggle" class="chat-toggle" aria-label="Открыть чат с консультантом">
+    <svg class="chat-icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <span class="chat-label">Консультант</span>
+  </button>
+  
+  <div id="chat-panel" class="chat-panel" role="dialog" aria-label="Онлайн-консультант" aria-hidden="true">
+    <div class="chat-header">
+      <h3 class="chat-title">Онлайн-консультант</h3>
+      <button id="chat-close" class="chat-close" aria-label="Закрыть чат">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div id="chat-messages" class="chat-messages">
+      <div class="chat-welcome">
+        <p>Здравствуйте! Я онлайн-консультант СВК Авто. Чем могу помочь?</p>
+      </div>
+      
+      <!-- Geo selection step -->
+      <div id="chat-geo-step" class="chat-geo-step">
+        <p class="geo-question">Выберите ваш район:</p>
+        <div class="geo-buttons">
+          <button class="geo-btn" data-geo="center">Я в центре Москвы</button>
+          <button class="geo-btn" data-geo="northwest">Я на северо-западе (Кунцево/Крылатское/Строгино)</button>
+          <button class="geo-btn" data-geo="other">Другой район</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="chat-input-area" class="chat-input-area" style="display: none;">
+      <div class="quota-indicator">
+        <span id="quota-text">Осталось вопросов: 5</span>
+      </div>
+      
+      <!-- Turnstile container -->
+      <div id="turnstile-container" class="turnstile-container"></div>
+      
+      <form id="chat-form" class="chat-form">
+        <input 
+          type="text" 
+          id="chat-input" 
+          class="chat-input" 
+          placeholder="Введите ваш вопрос..."
+          autocomplete="off"
+          maxlength="500"
+          aria-label="Ваш вопрос"
+        >
+        <button type="submit" class="chat-send" aria-label="Отправить" disabled>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </div>
+    
+    <div id="chat-limit" class="chat-limit" style="display: none;">
+      <p>Лимит вопросов исчерпан.</p>
+      <p>Позвоните нам: <a href="tel:{{ site.phones.main | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}">{{ site.phones.main }}</a></p>
+      <p>Или <a href="/contacts/">оставьте заявку</a> — перезвоним.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+  
+  const API_BASE = '/api/consult';
+  const STORAGE_KEY = 'svk_chat_quota';
+  const CLOSED_UNTIL_KEY = 'svk_chat_closed_until';
+  const MAX_QUESTIONS = 5;
+  
+  let questionCount = 0;
+  let turnstileToken = null;
+  let turnstileWidgetId = null;
+  let messages = [];
+  let geoConfirmed = false;
+  
+  const widget = document.getElementById('chat-widget');
+  const toggle = document.getElementById('chat-toggle');
+  const panel = document.getElementById('chat-panel');
+  const close = document.getElementById('chat-close');
+  const messagesEl = document.getElementById('chat-messages');
+  const inputArea = document.getElementById('chat-input-area');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const quotaText = document.getElementById('quota-text');
+  const chatLimit = document.getElementById('chat-limit');
+  const geoStep = document.getElementById('chat-geo-step');
+  const turnstileContainer = document.getElementById('turnstile-container');
+  
+  // Check if chat was closed recently
+  function shouldHideWidget() {
+    const closedUntil = localStorage.getItem(CLOSED_UNTIL_KEY);
+    if (closedUntil) {
+      if (Date.now() < parseInt(closedUntil, 10)) {
+        return true;
+      }
+      localStorage.removeItem(CLOSED_UNTIL_KEY);
+    }
+    return false;
+  }
+  
+  // Load quota from storage
+  function loadQuota() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        const today = new Date().toDateString();
+        if (parsed.date === today) {
+          questionCount = parsed.count || 0;
+        } else {
+          questionCount = 0;
+          saveQuota();
+        }
+      } catch (e) {
+        questionCount = 0;
+      }
+    }
+  }
+  
+  function saveQuota() {
+    const data = {
+      date: new Date().toDateString(),
+      count: questionCount
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+  
+  function updateQuotaDisplay() {
+    const remaining = Math.max(0, MAX_QUESTIONS - questionCount);
+    quotaText.textContent = `Осталось вопросов: ${remaining}`;
+    
+    if (questionCount >= MAX_QUESTIONS) {
+      inputArea.style.display = 'none';
+      chatLimit.style.display = 'block';
+    }
+  }
+  
+  function initTurnstile() {
+    if (typeof turnstile !== 'undefined' && !turnstileWidgetId) {
+      turnstileWidgetId = turnstile.render('#turnstile-container', {
+        sitekey: 'TURNSTILE_SITE_KEY', // Will be replaced by Worker
+        callback: function(token) {
+          turnstileToken = token;
+          chatForm.querySelector('.chat-send').disabled = false;
+        },
+        'expired-callback': function() {
+          turnstileToken = null;
+          chatForm.querySelector('.chat-send').disabled = true;
+        }
+      });
+    }
+  }
+  
+  function addMessage(text, isUser = false) {
+    const msg = document.createElement('div');
+    msg.className = `chat-message ${isUser ? 'user' : 'assistant'}`;
+    msg.innerHTML = `<p>${escapeHtml(text)}</p>`;
+    messagesEl.appendChild(msg);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    
+    messages.push({ role: isUser ? 'user' : 'assistant', content: text });
+    if (messages.length > 10) {
+      messages = messages.slice(-10);
+    }
+  }
+  
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  async function sendMessage(text) {
+    if (!turnstileToken) {
+      addMessage('Пожалуйста, подтвердите, что вы не робот.', false);
+      return;
+    }
+    
+    chatForm.querySelector('.chat-send').disabled = true;
+    
+    try {
+      const response = await fetch(`${API_BASE}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: text,
+          turnstile_token: turnstileToken,
+          history: messages.slice(-5)
+        })
+      });
+      
+      if (response.status === 403) {
+        addMessage('Извините, консультант временно недоступен. Позвоните нам: {{ site.phones.main }}', false);
+        return;
+      }
+      
+      const data = await response.json();
+      
+      if (data.limit_reached) {
+        questionCount = MAX_QUESTIONS;
+        saveQuota();
+        updateQuotaDisplay();
+        addMessage(data.response, false);
+      } else {
+        addMessage(data.response, false);
+        questionCount++;
+        saveQuota();
+        updateQuotaDisplay();
+      }
+      
+      // Reset turnstile
+      if (turnstileWidgetId && typeof turnstile !== 'undefined') {
+        turnstile.reset(turnstileWidgetId);
+        turnstileToken = null;
+      }
+      
+    } catch (error) {
+      addMessage('Произошла ошибка. Пожалуйста, позвоните нам: {{ site.phones.main }}', false);
+    } finally {
+      chatForm.querySelector('.chat-send').disabled = !turnstileToken;
+    }
+  }
+  
+  function openChat() {
+    widget.setAttribute('data-active', 'true');
+    panel.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    
+    if (geoConfirmed && questionCount < MAX_QUESTIONS) {
+      inputArea.style.display = 'block';
+      initTurnstile();
+    }
+  }
+  
+  function closeChat() {
+    widget.setAttribute('data-active', 'false');
+    panel.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    
+    // Don't show for 7 days
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    localStorage.setItem(CLOSED_UNTIL_KEY, (Date.now() + sevenDays).toString());
+  }
+  
+  // Geo selection
+  geoStep.querySelectorAll('.geo-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const geo = this.dataset.geo;
+      
+      if (geo === 'other') {
+        addMessage('Мы специализируемся на обслуживании клиентов в центре и на северо-западе Москвы. Ближайшие к вам сервисы можно найти на картах. Если вы готовы приехать к нам — с удовольствием поможем!', false);
+        geoConfirmed = true;
+      } else {
+        geoConfirmed = true;
+        addMessage('Отлично! Задайте ваш вопрос.', false);
+      }
+      
+      geoStep.style.display = 'none';
+      
+      if (questionCount < MAX_QUESTIONS) {
+        inputArea.style.display = 'block';
+        initTurnstile();
+        updateQuotaDisplay();
+      } else {
+        chatLimit.style.display = 'block';
+      }
+    });
+  });
+  
+  // Event listeners
+  toggle.addEventListener('click', openChat);
+  close.addEventListener('click', closeChat);
+  
+  chatForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text) return;
+    
+    addMessage(text, true);
+    chatInput.value = '';
+    sendMessage(text);
+  });
+  
+  // Initialize
+  if (shouldHideWidget()) {
+    widget.style.display = 'none';
+  } else {
+    loadQuota();
+  }
+})();
+</script>

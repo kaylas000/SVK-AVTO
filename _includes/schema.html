@@ -1,0 +1,198 @@
+<!-- _includes/schema.html -->
+
+<!-- WebSite -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ site.title }}",
+  "url": "{{ site.url }}",
+  "description": "{{ site.description }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ site.url }}/search?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<!-- Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ site.company.name }}",
+  "alternateName": "{{ site.title }}",
+  "url": "{{ site.url }}",
+  "logo": "{{ site.url }}/assets/logo.png",
+  "email": "{{ site.company.email }}",
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "telephone": "{{ site.phones.main | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}",
+      "contactType": "customer service",
+      "areaServed": "RU",
+      "availableLanguage": ["Russian"],
+      "hoursAvailable": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "09:00",
+        "closes": "20:00"
+      }
+    },
+    {
+      "@type": "ContactPoint",
+      "telephone": "{{ site.phones.secondary | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}",
+      "contactType": "customer service",
+      "areaServed": "RU",
+      "availableLanguage": ["Russian"],
+      "hoursAvailable": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "09:00",
+        "closes": "20:00"
+      }
+    }
+  ],
+  "department": [
+    {
+      "@type": "AutoRepair",
+      "name": "{{ site.locations.poklonnaya.name }}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "ул. Поклонная, д. 11, стр. 1",
+        "addressLocality": "Москва",
+        "addressCountry": "RU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": {{ site.locations.poklonnaya.coords.lat }},
+        "longitude": {{ site.locations.poklonnaya.coords.lng }}
+      },
+      "telephone": "{{ site.locations.poklonnaya.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}",
+      "openingHours": "Mo-Su 09:00-20:00",
+      "priceRange": "₽₽",
+      "currenciesAccepted": "RUB",
+      "paymentAccepted": "Cash, Card"
+    },
+    {
+      "@type": "AutoRepair",
+      "name": "{{ site.locations.kutuzovsky.name }}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Кутузовский пр-т, д. 88",
+        "addressLocality": "Москва",
+        "addressCountry": "RU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": {{ site.locations.kutuzovsky.coords.lat }},
+        "longitude": {{ site.locations.kutuzovsky.coords.lng }}
+      },
+      "telephone": "{{ site.locations.kutuzovsky.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}",
+      "openingHours": "Mo-Su 09:00-20:00",
+      "priceRange": "₽₽",
+      "currenciesAccepted": "RUB",
+      "paymentAccepted": "Cash, Card"
+    }
+  ]
+}
+</script>
+
+<!-- BreadcrumbList -->
+{% if page.url != '/' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Главная",
+      "item": "{{ site.url }}/"
+    }
+    {% if page.url contains '/services/' and page.url != '/services/' %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Услуги",
+      "item": "{{ site.url }}/services/"
+    }
+    ,{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ page.title }}",
+      "item": "{{ page.url | absolute_url }}"
+    }
+    {% elsif page.url contains '/locations/' and page.url != '/locations/' %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Локации",
+      "item": "{{ site.url }}/locations/"
+    }
+    ,{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ page.title }}",
+      "item": "{{ page.url | absolute_url }}"
+    }
+    {% elsif page.url contains '/blog/' %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Блог",
+      "item": "{{ site.url }}/blog/"
+    }
+    {% if page.layout == 'post' %}
+    ,{
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ page.title }}",
+      "item": "{{ page.url | absolute_url }}"
+    }
+    {% endif %}
+    {% else %}
+    ,{
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ page.title }}",
+      "item": "{{ page.url | absolute_url }}"
+    }
+    {% endif %}
+  ]
+}
+</script>
+{% endif %}
+
+<!-- BlogPosting for posts -->
+{% if page.layout == 'post' %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "{{ page.title }}",
+  "description": "{{ page.description | truncate: 155 }}",
+  "image": "{{ page.image | absolute_url }}",
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.modified | default: page.date | date_to_xmlschema }}",
+  "author": {
+    "@type": "Organization",
+    "name": "{{ site.company.name }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ site.company.name }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ site.url }}/assets/logo.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ page.url | absolute_url }}"
+  }
+}
+</script>
+{% endif %}

@@ -1,0 +1,80 @@
+<!-- _layouts/service.html -->
+---
+layout: default
+---
+
+<article class="service-page">
+  <header class="service-header">
+    <div class="container">
+      <h1>{{ page.title }}</h1>
+      {% if page.description %}
+        <p class="service-description">{{ page.description }}</p>
+      {% endif %}
+    </div>
+  </header>
+  
+  <div class="service-content">
+    <div class="container">
+      {{ content }}
+      
+      {% if page.when_needed %}
+        <section class="service-section">
+          <h2>Когда нужна {{ page.service_name | default: 'эта услуга' }}</h2>
+          <ul>
+            {% for item in page.when_needed %}
+              <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+      
+      {% if page.process %}
+        <section class="service-section">
+          <h2>Как проходит {{ page.service_name | default: 'услуга' }}</h2>
+          <ol>
+            {% for step in page.process %}
+              <li>{{ step }}</li>
+            {% endfor %}
+          </ol>
+        </section>
+      {% endif %}
+      
+      {% if page.pricing %}
+        <section class="service-section">
+          <h2>Стоимость</h2>
+          {{ page.pricing | markdownify }}
+          <p class="pricing-note">Точная стоимость определяется после осмотра и диагностики и согласуется с вами до начала работ.</p>
+        </section>
+      {% endif %}
+      
+      {% if page.warranty %}
+        <section class="service-section">
+          <h2>Гарантия</h2>
+          <p>{{ page.warranty }}</p>
+        </section>
+      {% endif %}
+      
+      {% if page.faq %}
+        <section class="service-section">
+          <h2>Часто задаваемые вопросы</h2>
+          <div class="faq-list">
+            {% for qa in page.faq %}
+              <details class="faq-item">
+                <summary>{{ qa.question }}</summary>
+                <div class="faq-answer">{{ qa.answer | markdownify }}</div>
+              </details>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+      
+      <section class="service-cta">
+        <a href="/contacts/" class="btn btn-primary btn-lg">Записаться</a>
+        <div class="contact-info">
+          <p>Или позвоните: <a href="tel:{{ site.phones.main | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}">{{ site.phones.main }}</a> / <a href="tel:{{ site.phones.secondary | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}">{{ site.phones.secondary }}</a></p>
+          <p>{{ site.locations.poklonnaya.address }} / {{ site.locations.kutuzovsky.address }}</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</article>

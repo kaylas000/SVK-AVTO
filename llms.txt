@@ -1,0 +1,63 @@
+# llms.txt
+# Карта сайта для LLM-агентов
+
+## СВК Авто — автосервис в Москве
+
+**Название:** СВК Авто  
+**Слоган:** Сервис вашего комфорта  
+**Юр.лицо:** ООО «СВК Авто Плюс»  
+**ИНН:** 7715958669  
+**ОГРН:** 1137746292265  
+
+### Контакты
+- **Email:** svkauto@mail.ru
+- **Режим работы:** ежедневно 09:00–20:00
+
+### Станции
+1. **Поклонная:** Москва, ул. Поклонная, д. 11, стр. 1 (м. Парк Победы) — +7 (495) 722‑36‑27
+2. **Кутузовский:** Москва, Кутузовский пр-т, д. 88 — +7 (495) 722‑36‑15
+
+### Услуги
+- Техническое обслуживание — https://svkautoplus.ru/services/to/
+- Диагностика — https://svkautoplus.ru/services/diagnostics/
+- Ремонт двигателя — https://svkautoplus.ru/services/engine/
+- Ходовая часть — https://svkautoplus.ru/services/suspension/
+- Тормозная система — https://svkautoplus.ru/services/brakes/
+- АКПП и МКПП — https://svkautoplus.ru/services/transmission/
+- Кондиционер — https://svkautoplus.ru/services/ac/
+- Кузовной ремонт — https://svkautoplus.ru/services/body/
+- Сход-развал — https://svkautoplus.ru/services/wheel-alignment/
+- Шиномонтаж — https://svkautoplus.ru/services/tires/
+- Доп. оборудование — https://svkautoplus.ru/services/extras/
+- Полировка и химчистка — https://svkautoplus.ru/services/polishing/
+
+### Ключевые предложения
+- **ТО за 5 000 ₽** — плановое ТО для бензиновых двигателей до 4,5 л масла (масло + фильтр + мойка)
+- **Диагностика 1 500 ₽ + мойка** — комплексная диагностика
+- **Скидка 30%** по воскресеньям
+- **Скидка 25%** при записи в удобное для сервиса время
+
+### Гарантия
+- Диагностика: 14 дней
+- Расходники: 14 дней
+- РТИ: 30 дней
+- Топливная система: 30 дней
+- Ремонт кондиционера: 3 месяца
+- Ходовая/узлы: 6 месяцев
+- Кузовные работы: 6 месяцев
+
+### Правила
+- Цена при оформлении ориентировочная, финальная — после диагностики
+- Хранение после уведомления: 3 дня бесплатно, далее 350 ₽/сутки
+- Сроки: ТО — до 2 дней, текущий ремонт — до 3 дней, двигатель/КПП — до 20 дней, кузовной — до 45 дней
+
+### Страницы
+- Главная: https://svkautoplus.ru/
+- Услуги: https://svkautoplus.ru/services/
+- Цены: https://svkautoplus.ru/prices/
+- Акции: https://svkautoplus.ru/promo/
+- Блог: https://svkautoplus.ru/blog/
+- Контакты: https://svkautoplus.ru/contacts/
+- Правила: https://svkautoplus.ru/rules/
+- Гарантия: https://svkautoplus.ru/guarantee/
+- Политика: https://svkautoplus.ru/privacy/

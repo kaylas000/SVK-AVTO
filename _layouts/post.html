@@ -1,0 +1,67 @@
+<!-- _layouts/post.html -->
+---
+layout: default
+---
+
+<article class="post" itemscope itemtype="https://schema.org/BlogPosting">
+  <meta itemprop="mainEntityOfPage" content="{{ page.url | absolute_url }}">
+  
+  <header class="post-header">
+    <div class="container">
+      {% if page.category %}
+        <span class="post-category">{{ page.category }}</span>
+      {% endif %}
+      
+      <h1 class="post-title" itemprop="headline">{{ page.title }}</h1>
+      
+      <div class="post-meta">
+        <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+          {{ page.date | date: '%d %B %Y' | replace:'January','января' | replace:'February','февраля' | replace:'March','марта' | replace:'April','апреля' | replace:'May','мая' | replace:'June','июня' | replace:'July','июля' | replace:'August','августа' | replace:'September','сентября' | replace:'October','октября' | replace:'November','ноября' | replace:'December','декабря' }}
+        </time>
+        {% if page.modified %}
+          <meta itemprop="dateModified" content="{{ page.modified | date_to_xmlschema }}">
+        {% endif %}
+      </div>
+      
+      {% if page.image %}
+        <figure class="post-image">
+          <img src="{{ page.image }}" alt="{{ page.title }}" 
+               itemprop="image" 
+               loading="lazy" 
+               decoding="async"
+               style="aspect-ratio: 1200/630; object-fit: cover;">
+        </figure>
+      {% endif %}
+    </div>
+  </header>
+  
+  <div class="post-content" itemprop="articleBody">
+    <div class="container">
+      {{ content }}
+    </div>
+  </div>
+  
+  <footer class="post-footer">
+    <div class="container">
+      {% if page.tags %}
+        <div class="post-tags">
+          {% for tag in page.tags %}
+            <span class="tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+      
+      <div class="post-cta">
+        <h3>Есть вопросы по вашему автомобилю?</h3>
+        <p>Запишитесь на диагностику или позвоните нам.</p>
+        <div class="cta-buttons">
+          <a href="/contacts/" class="btn btn-primary">Записаться</a>
+          <a href="tel:{{ site.phones.main | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}" class="btn btn-outline">Позвонить</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <meta itemprop="author" content="{{ site.company.name }}">
+  <meta itemprop="publisher" content="{{ site.company.name }}">
+</article>

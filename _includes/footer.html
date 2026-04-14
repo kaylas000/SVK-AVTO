@@ -1,0 +1,61 @@
+<!-- _includes/footer.html -->
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-brand">
+          <span class="footer-logo">СВК Авто</span>
+          <p class="footer-slogan">Сервис вашего комфорта</p>
+          <p class="footer-hours">{{ site.company.hours }}</p>
+          <p class="footer-email"><a href="mailto:{{ site.company.email }}">{{ site.company.email }}</a></p>
+        </div>
+      </div>
+      
+      <div class="footer-col">
+        <h3 class="footer-title">Услуги</h3>
+        <ul class="footer-links">
+          <li><a href="/services/to/">Техническое обслуживание</a></li>
+          <li><a href="/services/diagnostics/">Диагностика</a></li>
+          <li><a href="/services/engine/">Ремонт двигателя</a></li>
+          <li><a href="/services/suspension/">Ходовая часть</a></li>
+          <li><a href="/services/brakes/">Тормозная система</a></li>
+          <li><a href="/services/transmission/">АКПП и МКПП</a></li>
+          <li><a href="/services/ac/">Кондиционер</a></li>
+          <li><a href="/services/body/">Кузовной ремонт</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-col">
+        <h3 class="footer-title">Информация</h3>
+        <ul class="footer-links">
+          <li><a href="/prices/">Цены</a></li>
+          <li><a href="/promo/">Акции</a></li>
+          <li><a href="/rules/">Правила оказания услуг</a></li>
+          <li><a href="/guarantee/">Гарантия</a></li>
+          <li><a href="/privacy/">Политика конфиденциальности</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-col">
+        <h3 class="footer-title">Контакты</h3>
+        <div class="footer-contacts">
+          <div class="footer-location">
+            <p class="location-name">{{ site.locations.poklonnaya.name }}</p>
+            <p>{{ site.locations.poklonnaya.address }}</p>
+            <p>м. {{ site.locations.poklonnaya.metro }}</p>
+            <p><a href="tel:{{ site.locations.poklonnaya.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}">{{ site.locations.poklonnaya.phone }}</a></p>
+          </div>
+          <div class="footer-location">
+            <p class="location-name">{{ site.locations.kutuzovsky.name }}</p>
+            <p>{{ site.locations.kutuzovsky.address }}</p>
+            <p><a href="tel:{{ site.locations.kutuzovsky.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' | remove: '–' }}">{{ site.locations.kutuzovsky.phone }}</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2024–2025 {{ site.company.name }}. ИНН {{ site.company.inn }}. ОГРН {{ site.company.ogrn }}.</p>
+    </div>
+  </div>
+</footer>
